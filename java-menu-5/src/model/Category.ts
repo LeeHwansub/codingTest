@@ -29,6 +29,8 @@ export const CategoryData = {
   },
 };
 
+import { ErrorMessages } from '../constants/ErrorMessages';
+
 export function getCategoryFromNumber(number: number): Category {
   const categoryMap: { [key: number]: Category } = {
     1: Category.JAPANESE,
@@ -40,7 +42,7 @@ export function getCategoryFromNumber(number: number): Category {
 
   const category = categoryMap[number];
   if (!category) {
-    throw new Error('[ERROR] 잘못된 카테고리 번호입니다.');
+    throw new Error(ErrorMessages.INVALID_CATEGORY_NUMBER);
   }
   return category;
 }

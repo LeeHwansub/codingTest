@@ -1,8 +1,10 @@
 import { Category } from './Category';
 import { Coach } from './Coach';
+import { Constants } from '../constants/Constants';
+import { ErrorMessages } from '../constants/ErrorMessages';
 
-const MAX_CATEGORY_COUNT = 2;
-const DAYS_OF_WEEK = 5;
+const { MAX_COUNT_PER_WEEK } = Constants.CATEGORY;
+const { DAYS } = Constants.WEEK;
 
 export class MenuRecommendation {
   private coaches: Coach[];
@@ -23,8 +25,8 @@ export class MenuRecommendation {
   }
 
   addCategory(category: Category): void {
-    if (this.getCategoryCount(category) >= MAX_CATEGORY_COUNT) {
-      throw new Error('[ERROR] 같은 카테고리는 최대 2회까지만 선택할 수 있습니다.');
+    if (this.getCategoryCount(category) >= MAX_COUNT_PER_WEEK) {
+      throw new Error(ErrorMessages.CATEGORY_LIMIT);
     }
     this.weeklyCategories.push(category);
   }
@@ -55,7 +57,7 @@ export class MenuRecommendation {
   }
 
   isComplete(): boolean {
-    return this.weeklyCategories.length === DAYS_OF_WEEK;
+    return this.weeklyCategories.length === DAYS;
   }
 }
 
