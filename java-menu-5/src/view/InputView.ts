@@ -1,7 +1,10 @@
 import * as readline from 'readline';
+import { Constants } from '../constants/Constants';
+import { ErrorMessages } from '../constants/ErrorMessages';
+import { OutputMessages } from '../constants/OutputMessages';
 
-const MIN_COACH_COUNT = 2;
-const MAX_COACH_COUNT = 5;
+const { MIN_COUNT, MAX_COUNT, MAX_BANNED_MENUS, MIN_NAME_LENGTH, MAX_NAME_LENGTH } = Constants.COACH;
+const { INPUT } = Constants.DELIMITER;
 
 export class InputView {
   private rl: readline.Interface;
@@ -16,7 +19,7 @@ export class InputView {
   async readCoachNames(): Promise<string[]> {
     return new Promise((resolve) => {
       const askQuestion = () => {
-        console.log('코치의 이름을 입력해 주세요. (, 로 구분)');
+        console.log(OutputMessages.INPUT_COACH_NAMES);
         this.rl.question('', (input: string) => {
           try {
             const names = this.parseNames(input);
@@ -36,10 +39,10 @@ export class InputView {
 
   private parseNames(input: string): string[] {
     if (!input || input.trim().length === 0) {
-      throw new Error('[ERROR] 코치 이름을 입력해주세요.');
+      throw new Error(ErrorMessages.COACH_NAME_REQUIRED);
     }
     const names = input
-      .split(',')
+      .split(INPUT)
       .map((name) => name.trim())
       .filter((name) => name.length > 0);
     this.validateNameLengths(names);
@@ -48,22 +51,22 @@ export class InputView {
 
   private validateNameLengths(names: string[]): void {
     for (const name of names) {
-      if (name.length < 2 || name.length > 4) {
-        throw new Error('[ERROR] 코치의 이름은 최소 2글자, 최대 4글자여야 합니다.');
+      if (name.length < MIN_NAME_LENGTH || name.length > MAX_NAME_LENGTH) {
+        throw new Error(ErrorMessages.COACH_NAME_LENGTH);
       }
     }
   }
 
   private validateCoachCount(names: string[]): void {
-    if (names.length < MIN_COACH_COUNT || names.length > MAX_COACH_COUNT) {
-      throw new Error('[ERROR] 코치는 최소 2명 이상, 최대 5명까지 입력해야 합니다.');
+    if (names.length < MIN_COUNT || names.length > MAX_COUNT) {
+      throw new Error(ErrorMessages.COACH_COUNT);
     }
   }
 
   async readBannedMenus(coachName: string): Promise<string[]> {
     return new Promise((resolve) => {
       const askQuestion = () => {
-        console.log(`${coachName}(이)가 못 먹는 메뉴를 입력해 주세요.`);
+        console.log(OutputMessages.INPUT_BANNED_MENUS(coachName));
         this.rl.question('', (input: string) => {
           try {
             if (!input || input.trim().length === 0) {
@@ -71,7 +74,7 @@ export class InputView {
               return;
             }
             const menus = input
-              .split(',')
+              .split(INPUT)
               .map((menu) => menu.trim())
               .filter((menu) => menu.length > 0);
             this.validateBannedMenusCount(menus);
@@ -89,8 +92,8 @@ export class InputView {
   }
 
   private validateBannedMenusCount(menus: string[]): void {
-    if (menus.length > 2) {
-      throw new Error('[ERROR] 못 먹는 메뉴는 최대 2개까지 입력할 수 있습니다.');
+    if (menus.length > MAX_BANNED_MENUS) {
+      throw new Error(ErrorMessages.BANNED_MENUS_COUNT);
     }
   }
 
