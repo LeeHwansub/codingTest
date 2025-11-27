@@ -1,11 +1,10 @@
 import { Category, getCategoryFromNumber, getCategoryMenus } from '../model/Category';
 import { Coach } from '../model/Coach';
 import { MenuRecommendation } from '../model/MenuRecommendation';
+import { Constants } from '../constants/Constants';
 
-const MIN_CATEGORY_NUMBER = 1;
-const MAX_CATEGORY_NUMBER = 5;
-const DAYS_OF_WEEK = 5;
-const MAX_CATEGORY_COUNT = 2;
+const { MIN_NUMBER, MAX_NUMBER, MAX_COUNT_PER_WEEK } = Constants.CATEGORY;
+const { DAYS } = Constants.WEEK;
 
 export class MenuRecommendationService {
   private pickNumberInRange(min: number, max: number): number {
@@ -24,7 +23,7 @@ export class MenuRecommendationService {
   recommendMenus(coaches: Coach[]): MenuRecommendation {
     const recommendation = new MenuRecommendation(coaches);
 
-    for (let day = 0; day < DAYS_OF_WEEK; day++) {
+    for (let day = 0; day < DAYS; day++) {
       const category = this.selectCategory(recommendation);
       recommendation.addCategory(category);
 
@@ -39,7 +38,7 @@ export class MenuRecommendationService {
 
   private selectCategory(recommendation: MenuRecommendation): Category {
     while (true) {
-      const categoryNumber = this.pickNumberInRange(MIN_CATEGORY_NUMBER, MAX_CATEGORY_NUMBER);
+      const categoryNumber = this.pickNumberInRange(MIN_NUMBER, MAX_NUMBER);
       const category = getCategoryFromNumber(categoryNumber);
 
       if (this.canSelectCategory(category, recommendation)) {
@@ -52,7 +51,7 @@ export class MenuRecommendationService {
     const count = recommendation
       .getWeeklyCategories()
       .filter((c) => c === category).length;
-    return count < MAX_CATEGORY_COUNT;
+    return count < MAX_COUNT_PER_WEEK;
   }
 
   private selectMenuForCoach(
